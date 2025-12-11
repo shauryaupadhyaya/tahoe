@@ -80,3 +80,12 @@ function makeDraggable(win) {
 document.querySelectorAll(".window").forEach(win => {
     makeDraggable(win)
 })
+
+//move window forward on click
+let topZ = 10;
+document.querySelectorAll(".window").forEach(win => {
+    win.addEventListener("mousedown", () => {
+        topZ++;
+        win.style.zIndex = topZ
+    })
+})
