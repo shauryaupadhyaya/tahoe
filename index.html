@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Tahoe</title>
+</head>
+<body>
+    <div id="background"></div>
+
+    <div class="topbar">
+        <div class="top-time"></div>
+        <div class="top-date"></div>
+    </div>
+
+    <div class="window" id="time-window">
+        <div class="window-header">
+            <button class="close-btn" data-close="time-window"></button>
+            Time
+        </div>
+        <div class="window-content"></div>
+    </div>
+
+    <div class="window" id="music-window">
+        <div class="window-header">
+            <button class="close-btn" data-close="music-window"></button>
+            Now Playing
+        </div>
+        <div class="window-content"></div>
+    </div>
+
+    <div class="window" id="settings-window">
+        <div class="window-header">
+            <button class="close-btn" data-close="settings-window"></button>
+            Settings
+        </div>
+        <div class="window-content">
+            <input type="file" id="bgupload" accept="image/*">
+        </div>
+    </div>
+
+    <div class="window" id="weather-window">
+        <div class="window-header">
+            <button class="close-btn" data-close="weather-window"></button>
+            Weather
+        </div>
+        <div class="window-content"></div>
+    </div>
+
+    <div class="window" id="timer-window">
+        <div class="window-header">
+            <button class="close-btn" data-close="timer-window"></button>
+            Timer
+        </div>
+        <div class="window-content"></div>
+    </div>
+
+    <div class="dock">
+        <div class="dock-icon window-open" data-open="time-window">🕒</div>
+        <div class="dock-icon window-open" data-open="weather-window">☀️</div>
+        <div class="dock-icon window-open" data-open="timer-window">⏱️</div>
+        <div class="dock-icon window-open" data-open="music-window">🎵</div>
+        <div class="dock-icon window-open" data-open="settings-window">⚙️</div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
