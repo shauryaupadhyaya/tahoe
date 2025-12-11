@@ -80,4 +80,3 @@ function makeDraggable(win) {
 document.querySelectorAll(".window").forEach(win => {
     makeDraggable(win)
 })
-
