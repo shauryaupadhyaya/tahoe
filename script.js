@@ -21,6 +21,13 @@ document.addEventListener("DOMContentLoaded", () => {
         reader.readAsDataURL(file)
     })
 
+    document.getElementById("removeBgBtn").addEventListener("click", () => {
+        localStorage.removeItem("userBg")
+        bg.style.backgroundImage=""
+        preview.style.backgroundImage=""
+        bg.style.backgroundColor="#000"
+    })
+
     document.getElementById("saveBgBtn").addEventListener("click", () => {
         const style = preview.style.backgroundImage
         if (!style) return
