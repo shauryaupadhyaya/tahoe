@@ -263,10 +263,30 @@ body::after{
 .bg-btns{
     display: flex;
     gap: 10px;
-    margin-top: 10px;
 }
 
 .bg-btns .btn{
     flex: 1;
     text-align: center;
+}
+
+.file-btn{
+    display: inline-block;
+    padding: 10px 14px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(20px);
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.file-btn:hover{
+    background: rgba(255,255,255,0.35);
+}
+
+.file-btn:active{
+    transform: scale(0.96);
 }

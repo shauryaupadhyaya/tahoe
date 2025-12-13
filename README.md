@@ -8,3 +8,5 @@ macos inspired look for a website since i was bored
 - windows closing opening fixed
 - windows made draggable
 - windows come to front on click
+- settings pages created
+- background upload along with save and remove features
