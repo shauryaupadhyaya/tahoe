@@ -36,7 +36,27 @@
             Settings
         </div>
         <div class="window-content">
-            <input type="file" id="bgupload" accept="image/*">
+            <div class="settings-wrapper">
+                <div class="settings-left">
+                    <button class="settings-tab active" data-tab="appearance">Appearance</button>
+                    <button class="settings-tab" data-tab="theme">Theme</button>
+                </div>
+
+                <div class="settings-right">
+                    <div class="settings-page" id="appearance-page">
+                        <h2>Appearance</h2>
+                        <div class="bg-preview" id="bgPreview"></div>
+                        <input type="file" id="bgInput" accept="image/*">
+                        <button id="saveBgBtn" class="btn">Save Background</button>
+                    </div>
+
+                    <div class="settings-page hidden" id="theme-page">
+                        <h2>Theme</h2>
+                        <button id="lightBtn" class="btn small">Light Mode</button>
+                        <button id="darkBtn" class="btn small">Dark Mode</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
