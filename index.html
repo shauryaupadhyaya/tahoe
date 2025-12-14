@@ -69,7 +69,53 @@
             <button class="close-btn" data-close="weather-window"></button>
             Weather
         </div>
-        <div class="window-content"></div>
+        <div class="window-content">
+            <div class="weather-container">
+                <div class="weather-header">
+                    <input type="text" id="cityInput" placeholder="Enter City">
+                    <button id="searchCityBtn" class="btn">Search</button>
+                </div>
+
+                <div class="weather-current">
+                    <div class="weather-location">---</div>
+                    <div class="weather-main">
+                        <img src="" alt="Weather Icon" class="weather-icon" />
+                        <span class="weather-temp">---°C</span>
+                    </div>
+                </div>
+
+                <div class="weather-hourly">
+                    <div class="hour">Now</div>
+                    <div class="hour">1 PM</div>
+                    <div class="hour">2 PM</div>
+                    <div class="hour">3 PM</div>
+                    <div class="hour">4 PM</div>
+                    <div class="hour">5 PM</div>
+                </div>
+
+                <div class="weather-bottom">
+                    <div class="air-quality">
+                        <div class="label">Air Quality</div>
+                        <div class="value">Good</div>
+                    </div>
+
+                    <div class="forecast-3day">
+                        <div class="day">
+                            <span>Mon</span>
+                            <span>30°</span>
+                        </div>
+                        <div class="day">
+                            <span>Tue</span>
+                            <span>30°</span>
+                        </div>
+                        <div class="day">
+                            <span>Wed</span>
+                            <span>30°</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="window" id="timer-window">
