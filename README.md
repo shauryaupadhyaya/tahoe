@@ -10,3 +10,5 @@ macos inspired look for a website since i was bored
 - windows come to front on click
 - settings pages created
 - background upload along with save and remove features
+- weather default city data shown in window
+- 24 hour, 3 day forecasts, and air quality updated

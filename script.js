@@ -132,6 +132,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const weatherApiKey = "0969f45a36776f2842a3469845175355";
   const defaultCity = "Singapore";
 
+  const weatherCodeToIcon = code => {
+    if (code === 0) return "01d";
+    if (code <= 2) return "02d";
+    if (code <= 3) return "03d";
+    if (code <= 48) return "50d";
+    if (code <= 67) return "09d";
+    if (code <= 77) return "13d";
+    if (code <= 82) return "10d";
+    if (code <= 99) return "11d";
+    return "03d";
+  }
+
   async function loadWeather(city) {
     try {
       const res = await fetch(
@@ -158,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // hourly
       const hourlyRes = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m&timezone=Asia%2FSingapore`
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weathercode&timezone=Asia%2FSingapore`
       );
 
       const hourlyData = await hourlyRes.json();
@@ -168,24 +180,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (hourlyData.hourly && hourlyData.hourly.time){
             const now = new Date();
-
-            const startIndex = hourlyData.hourly.time.findIndex(
-                t => new Date(t) >= now
+            const startIndex = Math.max(
+                0,
+                hourlyData.hourly.time.findIndex(t => new Date(t) >= now)
             );
 
-            const hours = hourlyData.hourly.time
-                .map((t, i) => ({
+            hourlyData.hourly.time
+            .map((t, i) => ({
                     time: new Date(t),
-                    temp: Math.round(hourlyData.hourly.temperature_2m[i])
+                    temp: Math.round(hourlyData.hourly.temperature_2m[i]),
+                    icon: weatherCodeToIcon(hourlyData.hourly.weathercode[i])
                 }))
-                .slice(startIndex, startIndex+24);
-            
-            hours.forEach(h => {
+            .slice(startIndex, startIndex+24)
+            .forEach(h => {
                 const hour = h.time.getHours().toString().padStart(2, "0");
                 const div = document.createElement("div");
                 div.className = "hour";
                 div.innerHTML=`
                     <div>${hour}:00</div>
+                    <img src="https://openweathermap.org/img/wn/${h.icon}.png">
                     <div>${h.temp}°</div>
                 `;
                 hourlyContainer.appendChild(div);
@@ -198,15 +211,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const forecastDiv = document.querySelector(".forecast-3day");
       forecastDiv.innerHTML = ""
+
       if (dailyData.daily && dailyData.daily.time) {
         for (let i = 1; i <= 3; i++) {
             const date = new Date(dailyData.daily.time[i]);
             const name = date.toLocaleDateString("en-US", { weekday: "short" });
             const temp = Math.round(dailyData.daily.temperature_2m_max[i])
+            const icon = weatherCodeToIcon(dailyData.daily.weathercode[i])
             const div = document.createElement("div");
             div.className = "day";
             div.innerHTML = `
             <span>${name}</span>
+            <img src="https://openweathermap.org/img/wn/${icon}.png">
             <span>${temp}°</span>
             `;
             forecastDiv.appendChild(div);
@@ -218,28 +234,55 @@ document.addEventListener("DOMContentLoaded", () => {
         `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=pm2_5&timezone=Asia/Singapore`
       );
       const aqiData = await aqiRes.json();
+      
+      const aqiValueEl = document.querySelector(".air-quality .value");
+      aqiValueEl.className = "value";
 
-      if (aqiData.hourly && aqiData.hourly.pm2_5 && aqiData.hourly.pm2_5.length > 0) {
+      if (aqiData.hourly && aqiData.hourly.pm2_5) {
         const now = new Date();
-        const idx = aqiData.hourly.time.findIndex(t => new Date(t) >= now) ?? 0;
-        const pm25 = aqiData.hourly.pm2_5[idx] ?? aqiData.hourly.pm2_5[0];
+        const index = aqiData.hourly.time.findIndex(t => new Date(t) >= now);
+        const idx = index === -1 ? 0 : index;
+        const pm25 = aqiData.hourly.pm2_5[idx];
         
         let aqiText = "Good";
-        if (pm25 > 35) aqiText = "Moderate";
-        if (pm25 > 55) aqiText = "Poor";
-        if (pm25 > 150) aqiText = "Very Poor";
-        document.querySelector(".air-quality .value").innerText = aqiText;
+        let aqiClass = "aqi-good";
+
+        if (pm25>12){
+            aqiText = "Moderate";
+            aqiClass = "aqi-moderate";
+        }
+
+        if (pm25>35){
+            aqiText = "Poor";
+            aqiClass = "aqi-poor";
+        }
+
+        if (pm25>55){
+            aqiText = "Very Poor";
+            aqiClass = "aqi-very-poor";
+        }
+
+        if (pm25>=150){
+            aqiText = "Hazardous";
+            aqiClass = "aqi-hazardous";
+        }
+
+        aqiValueEl.innerText = `${aqiText} (${Math.round(pm25)})`
+        aqiValueEl.classList.add(aqiClass);
       } else {
-        document.querySelector(".air-quality .value").innerText = "---";
+        aqiValueEl.innerText = "---";
       }
     } catch (err) {
-        console.error("Weather API Error:", err);
         document.querySelector(".weather-location").innerText = "Error";
         document.querySelector(".weather-temp").innerText = "---°C";
         document.querySelector(".weather-icon").src = "";
         document.querySelector(".weather-hourly").innerHTML = "";
         document.querySelector(".forecast-3day").innerHTML = "";
         document.querySelector(".air-quality .value").innerHTML = "---";
+
+        const aqiValueEl = document.querySelector(".air-quality .value");
+        aqiValueEl.className = "value";
+        aqiValueEl.innerText = "---";
     }
   }
 
