@@ -308,11 +308,19 @@ body::after{
     height: 100%;
     color: white;
     justify-content: space-between;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.weather-container.loading{
+    opacity: 0.3;
+    transform: scale(0.98);
 }
 
 .weather-header{
     display: flex;
     gap: 10px;
+    width: 100%;
+    align-items: stretch;
 }
 
 .weather-header input{
@@ -322,6 +330,90 @@ body::after{
     border: 1px solid rgba(255,255,255,0.25);
     background: rgba(255,255,255,0.1);
     color: white;
+}
+
+.weather-search{
+    position: relative;
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.weather-search input {
+    width: 100%;
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.city-dropdown{
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    background: rgba(30,30,35,0.95);
+    backdrop-filter: blur(50px) saturate(180%);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    z-index: 100;
+    display: none;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    padding: 6px;
+}
+
+.city-dropdown.show{
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.city-dropdown::-webkit-scrollbar{
+    width: 8px;
+}
+
+.city-dropdown::-webkit-scrollbar-track{
+    background: transparent;
+    margin: 8px 0;
+}
+
+.city-dropdown::-webkit-scrollbar-thumb{
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.city-dropdown::-webkit-scrollbar-thumb:hover{
+    background: rgba(255,255,255,0.4);
+}
+
+.city-dropdown div{
+    padding: 11px 14px;
+    color: white;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.18s ease, transform 0.18s ease;
+    border: 1px solid transparent;
+}
+
+.city-dropdown div:hover{
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.12);
+    transform: translateX(2px);
+}
+
+.city-dropdown div:active{
+    transform: scale(0.98);
+    background: rgba(255,255,255,0.22);
 }
 
 .weather-current{
