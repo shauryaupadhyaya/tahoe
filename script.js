@@ -369,6 +369,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   initWeather();
 
+  console.log("Weather window display:", document.getElementById("weather-window").style.display);
+
   document.getElementById("searchCityBtn").addEventListener("click", () => {
     const city = document.getElementById("cityInput").value.trim();
     if (city) loadWeather(city);
