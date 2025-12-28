@@ -13,3 +13,5 @@ macos inspired look for a website since i was bored
 - weather default city data shown in window
 - 24 hour, 3 day forecasts, and air quality updated
 - dropdown auto prompting for weather
+- ask for location from user
+- dock styling changes

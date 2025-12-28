@@ -50,6 +50,11 @@ document.addEventListener("DOMContentLoaded", () => {
       el.style.display = "block";
       topZ++;
       el.style.zIndex = topZ;
+
+      icon.classList.add("bouncing");
+      setTimeout(() => {
+        icon.classList.remove('bouncing');
+      }, 300);
     };
   });
 
