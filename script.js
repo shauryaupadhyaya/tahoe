@@ -440,4 +440,158 @@ document.addEventListener("DOMContentLoaded", () => {
       cityDropdown.style.display = "none";
     }
   });
+
+  //timer
+  let totalSeconds = 0;
+  let remainingSeconds = 0;
+  let timerInterval = null;
+  let isRunning = false;
+
+  const timeDisplay = document.querySelector(".timer-time");
+  const timeInput = document.querySelector("#timeInput");
+  const startPauseBtn = document.querySelector("#startPauseBtn");
+  const cancelBtn = document.querySelector("#cancelBtn");
+
+  // convert to seconds
+  function parseTime(value){
+    const parts = value.split(":").map(Number);
+    if(parts.length !== 3) return 0;
+    return parts[0]*3600 + parts[1]*60 + parts[2];
+  }
+
+  // convert to hour
+  function formatTime(sec){
+    const h = String(Math.floor(sec/3600)).padStart(2, "0");
+    const m = String(Math.floor((sec%3600)/60)).padStart(2, "0");
+    const s = String(sec%60).padStart(2, "0")
+    return `${h}:${m}:${s}`
+  }
+
+  // update text
+  function updateDisplay(){
+    timeDisplay.textContent = formatTime(remainingSeconds);
+  }
+
+  updateDisplay();
+
+  // start/pause button
+  startPauseBtn.addEventListener("click", () => {
+    if(!isRunning){
+      if(remainingSeconds === 0){
+        totalSeconds = parseTime(timeInput.value);
+        remainingSeconds = totalSeconds
+        updateDisplay();
+      }
+      
+      if(remainingSeconds <= 0) return;
+      
+      isRunning = true;
+      startPauseBtn.textContent = "Pause";
+      cancelBtn.classList.remove("hidden");
+      setWheelLock(true);
+
+      timerInterval = setInterval(() => {
+        remainingSeconds--;
+        updateDisplay();
+        if(remainingSeconds<=0){
+          clearInterval(timerInterval);
+          isRunning = false;
+          startPauseBtn.textContent = "Start";
+          cancelBtn.classList.add("hidden");
+        }
+      }, 1000);
+    } else{
+      clearInterval(timerInterval);
+      isRunning = false;
+      startPauseBtn.textContent = "Start";
+      setWheelLock(false);
+    }
+  });
+
+  // cancel button
+  cancelBtn.addEventListener("click", () => {
+    clearInterval(timerInterval);
+    isRunning = false;
+    remainingSeconds = 0;
+    updateDisplay();
+    startPauseBtn.textContent = "Start";
+    cancelBtn.classList.add("hidden");
+    setWheelLock(false);
+  })
+
+  // picker wheel (hour minute and second)
+  const wheel = document.querySelector(".wheel");
+
+  function setWheelLock(locked){
+    document.querySelectorAll(".wheel").forEach(wheel => {
+      wheel.style.pointerEvents = locked ? "none" : "auto";
+      wheel.style.opacity = locked ? "0.6" : "1";
+    })
+  }
+
+  function setupWheel(wheel, onChange){
+    const items = Array.from(wheel.querySelectorAll(".wheel-item:not(.wheel-spacer)"));
+    let ticking = false;
+
+    function update(){
+      const wheelRect = wheel.getBoundingClientRect();
+      const wheelCenter = wheelRect.top + wheelRect.height / 2;
+
+      let closest = null;
+      let closestDist = Infinity;
+
+      items.forEach(child => {
+        const rect = child.getBoundingClientRect();
+        const itemCenter = rect.top + rect.height / 2;
+        const dist = Math.abs(wheelCenter - itemCenter);
+
+        if(dist < closestDist){
+          closestDist = dist;
+          closest = child;
+        }
+      });
+
+      if (!closest) return;
+
+      items.forEach(i => i.classList.remove("active"));
+      closest.classList.add("active");
+
+      const value = Number(closest.textContent)
+
+      if(wheel.classList.contains("hour-wheel")) pickedHours = value;
+      if(wheel.classList.contains("minute-wheel")) pickedMinutes = value;
+      if(wheel.classList.contains("second-wheel")) pickedSeconds = value;
+
+      timeInput.value = 
+        `${String(pickedHours).padStart(2, "0")}:` +
+        `${String(pickedMinutes).padStart(2, "0")}:` +
+        `${String(pickedSeconds).padStart(2, "0")}`;
+
+      remainingSeconds = pickedHours * 3600 + pickedMinutes * 60 + pickedSeconds;
+      updateDisplay();
+
+      ticking = false;
+    }
+
+    wheel.addEventListener("scroll", () => {
+      if(!ticking){
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    });
+
+    update();
+  }
+
+  let pickedHours = 0;
+  let pickedMinutes = 0;
+  let pickedSeconds = 0;
+
+  const hourWheel = document.querySelector(".hour-wheel");
+  const minuteWheel = document.querySelector(".minute-wheel");
+  const secondWheel = document.querySelector(".second-wheel");
+
+  setupWheel(hourWheel);
+  setupWheel(minuteWheel);
+  setupWheel(secondWheel);
 });

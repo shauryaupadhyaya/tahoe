@@ -646,17 +646,25 @@ body::after{
 
 /* timer styles */
 #timer-window{
-    width: 420px;
+    width: 460px;
     height: 380px;
+}
+
+.timer-main{
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    flex: 1;
 }
 
 .timer-content{
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
     height: 100%;
-    padding: 0;
 }
 
 .timer-circle{
@@ -668,6 +676,8 @@ body::after{
 
 .progress-ring{
     transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    overflow: visible;
 }
 
 .ring-bg{
@@ -725,5 +735,70 @@ body::after{
 }
 
 .timer-controls{
-    margin-bottom: 20px;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.hidden{
+    display: none;
+}
+
+.timer-picker{
+    width: 220px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-picker input{
+    width: 140px;
+    padding: 10px;
+    text-align: center;
+    font-size: 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    outline: none;
+}
+
+.timer-wheel{
+    width: 220px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheel{
+    height: 160px;
+    width: 100%;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    text-align: center;
+    scrollbar-width: none;
+}
+
+.wheel::-webkit-scrollbar{
+    display: none;
+}
+
+.wheel-item{
+    height: 40px;
+    line-height: 40px;
+    font-size: 22px;
+    color: rgba(255,255,255,0.4);
+    scroll-snap-align: center;
+}
+
+.wheel-item.active{
+    color: white;
+    font-size: 26px;
+}
+
+.wheel-item, .wheel-spacer{
+    height: 40px;
+    line-height: 40px;
 }

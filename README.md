@@ -15,3 +15,5 @@ macos inspired look for a website since i was bored
 - dropdown auto prompting for weather
 - ask for location from user
 - dock styling changes
+- timer window created
+- picker wheel for timer input made

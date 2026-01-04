@@ -127,15 +127,186 @@
             Timer
         </div>
         <div class="window-content timer-content">
-            <div class="timer-circle">
-                <svg class="progress-ring" width="220" height="220"><circle class="ring-bg" cx="110" cy="110" r="100"/><circle class="ring-progress" cx="110" cy="110" r="100"/></svg>
-                <div class="timer-time">
-                    00:00:00
+            <div class="timer-main">
+                <div class="timer-circle">
+                    <svg class="progress-ring" width="220" height="220">
+                        <circle class="ring-bg" cx="110" cy="110" r="100"/>
+                        <circle class="ring-progress" cx="110" cy="110" r="100"/>
+                    </svg>
+                    <div class="timer-time">00:00:00</div>
+                </div>
+
+                <div class="timer-wheel">
+                    <div class="wheel hour-wheel">
+                        <div class="wheel-item wheel-spacer"></div>
+                        <div class="wheel-item wheel-spacer"></div>
+                        <div class="wheel-item">00</div>
+                        <div class="wheel-item">01</div>
+                        <div class="wheel-item">02</div>
+                        <div class="wheel-item">03</div>
+                        <div class="wheel-item">04</div>
+                        <div class="wheel-item">05</div>
+                        <div class="wheel-item">06</div>
+                        <div class="wheel-item">07</div>
+                        <div class="wheel-item">08</div>
+                        <div class="wheel-item">09</div>
+                        <div class="wheel-item">10</div>
+                        <div class="wheel-item">11</div>
+                        <div class="wheel-item">12</div>
+                        <div class="wheel-item">13</div>
+                        <div class="wheel-item">14</div>
+                        <div class="wheel-item">15</div>
+                        <div class="wheel-item">16</div>
+                        <div class="wheel-item">17</div>
+                        <div class="wheel-item">18</div>
+                        <div class="wheel-item">19</div>
+                        <div class="wheel-item">20</div>
+                        <div class="wheel-item">21</div>
+                        <div class="wheel-item">22</div>
+                        <div class="wheel-item">23</div>
+                        <div class="wheel-item wheel-spacer"></div>
+                        <div class="wheel-item wheel-spacer"></div>
+                    </div>
+                    <div class="wheel minute-wheel">
+                        <div class="wheel-item wheel-spacer"></div>
+                        <div class="wheel-item wheel-spacer"></div>
+                        <div class="wheel-item">00</div>
+                        <div class="wheel-item">01</div>
+                        <div class="wheel-item">02</div>
+                        <div class="wheel-item">03</div>
+                        <div class="wheel-item">04</div>
+                        <div class="wheel-item">05</div>
+                        <div class="wheel-item">06</div>
+                        <div class="wheel-item">07</div>
+                        <div class="wheel-item">08</div>
+                        <div class="wheel-item">09</div>
+                        <div class="wheel-item">10</div>
+                        <div class="wheel-item">11</div>
+                        <div class="wheel-item">12</div>
+                        <div class="wheel-item">13</div>
+                        <div class="wheel-item">14</div>
+                        <div class="wheel-item">15</div>
+                        <div class="wheel-item">16</div>
+                        <div class="wheel-item">17</div>
+                        <div class="wheel-item">18</div>
+                        <div class="wheel-item">19</div>
+                        <div class="wheel-item">20</div>
+                        <div class="wheel-item">21</div>
+                        <div class="wheel-item">22</div>
+                        <div class="wheel-item">23</div>
+                        <div class="wheel-item">24</div>
+                        <div class="wheel-item">25</div>
+                        <div class="wheel-item">26</div>
+                        <div class="wheel-item">27</div>
+                        <div class="wheel-item">28</div>
+                        <div class="wheel-item">29</div>
+                        <div class="wheel-item">30</div>
+                        <div class="wheel-item">31</div>
+                        <div class="wheel-item">32</div>
+                        <div class="wheel-item">33</div>
+                        <div class="wheel-item">34</div>
+                        <div class="wheel-item">35</div>
+                        <div class="wheel-item">36</div>
+                        <div class="wheel-item">37</div>
+                        <div class="wheel-item">38</div>
+                        <div class="wheel-item">39</div>
+                        <div class="wheel-item">40</div>
+                        <div class="wheel-item">41</div>
+                        <div class="wheel-item">42</div>
+                        <div class="wheel-item">43</div>
+                        <div class="wheel-item">44</div>
+                        <div class="wheel-item">45</div>
+                        <div class="wheel-item">46</div>
+                        <div class="wheel-item">47</div>
+                        <div class="wheel-item">48</div>
+                        <div class="wheel-item">49</div>
+                        <div class="wheel-item">50</div>
+                        <div class="wheel-item">51</div>
+                        <div class="wheel-item">52</div>
+                        <div class="wheel-item">53</div>
+                        <div class="wheel-item">54</div>
+                        <div class="wheel-item">55</div>
+                        <div class="wheel-item">56</div>
+                        <div class="wheel-item">57</div>
+                        <div class="wheel-item">58</div>
+                        <div class="wheel-item">59</div>
+                        <div class="wheel-item wheel-spacer"></div>
+                        <div class="wheel-item wheel-spacer"></div>
+                    </div>
+                    <div class="wheel second-wheel">
+                        <div class="wheel-item wheel-spacer"></div>
+                        <div class="wheel-item wheel-spacer"></div>
+                        <div class="wheel-item">00</div>
+                        <div class="wheel-item">01</div>
+                        <div class="wheel-item">02</div>
+                        <div class="wheel-item">03</div>
+                        <div class="wheel-item">04</div>
+                        <div class="wheel-item">05</div>
+                        <div class="wheel-item">06</div>
+                        <div class="wheel-item">07</div>
+                        <div class="wheel-item">08</div>
+                        <div class="wheel-item">09</div>
+                        <div class="wheel-item">10</div>
+                        <div class="wheel-item">11</div>
+                        <div class="wheel-item">12</div>
+                        <div class="wheel-item">13</div>
+                        <div class="wheel-item">14</div>
+                        <div class="wheel-item">15</div>
+                        <div class="wheel-item">16</div>
+                        <div class="wheel-item">17</div>
+                        <div class="wheel-item">18</div>
+                        <div class="wheel-item">19</div>
+                        <div class="wheel-item">20</div>
+                        <div class="wheel-item">21</div>
+                        <div class="wheel-item">22</div>
+                        <div class="wheel-item">23</div>
+                        <div class="wheel-item">24</div>
+                        <div class="wheel-item">25</div>
+                        <div class="wheel-item">26</div>
+                        <div class="wheel-item">27</div>
+                        <div class="wheel-item">28</div>
+                        <div class="wheel-item">29</div>
+                        <div class="wheel-item">30</div>
+                        <div class="wheel-item">31</div>
+                        <div class="wheel-item">32</div>
+                        <div class="wheel-item">33</div>
+                        <div class="wheel-item">34</div>
+                        <div class="wheel-item">35</div>
+                        <div class="wheel-item">36</div>
+                        <div class="wheel-item">37</div>
+                        <div class="wheel-item">38</div>
+                        <div class="wheel-item">39</div>
+                        <div class="wheel-item">40</div>
+                        <div class="wheel-item">41</div>
+                        <div class="wheel-item">42</div>
+                        <div class="wheel-item">43</div>
+                        <div class="wheel-item">44</div>
+                        <div class="wheel-item">45</div>
+                        <div class="wheel-item">46</div>
+                        <div class="wheel-item">47</div>
+                        <div class="wheel-item">48</div>
+                        <div class="wheel-item">49</div>
+                        <div class="wheel-item">50</div>
+                        <div class="wheel-item">51</div>
+                        <div class="wheel-item">52</div>
+                        <div class="wheel-item">53</div>
+                        <div class="wheel-item">54</div>
+                        <div class="wheel-item">55</div>
+                        <div class="wheel-item">56</div>
+                        <div class="wheel-item">57</div>
+                        <div class="wheel-item">58</div>
+                        <div class="wheel-item">59</div>
+                        <div class="wheel-item wheel-spacer"></div>
+                        <div class="wheel-item wheel-spacer"></div>
+                    </div>
                 </div>
             </div>
+
+            <input id="timeInput" value="00:00:00" hidden>
+
             <div class="timer-controls">
-                <button class="timer-btn secondary">Cancel</button>
-                <button class="timer-btn primary">Start</button>
+                <button class="timer-btn secondary hidden" id="cancelBtn">Cancel</button>
+                <button class="timer-btn primary" id="startPauseBtn">Start</button>
             </div>
         </div>
     </div>
