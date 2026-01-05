@@ -130,6 +130,12 @@
             <div class="timer-main">
                 <div class="timer-circle">
                     <svg class="progress-ring" width="220" height="220">
+                        <defs>
+                            <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#c4b5fd"/>
+                                <stop offset="100%" stop-color="#8b5cf6"/>
+                            </linearGradient>
+                        </defs>
                         <circle class="ring-bg" cx="110" cy="110" r="100"/>
                         <circle class="ring-progress" cx="110" cy="110" r="100"/>
                     </svg>

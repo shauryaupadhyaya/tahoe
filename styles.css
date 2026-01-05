@@ -658,6 +658,7 @@ body::after{
     margin-top: 6px;
     margin-bottom: 16px;
     flex: 1;
+    position: relative;
 }
 
 .timer-content{
@@ -672,6 +673,29 @@ body::after{
     width: 220px;
     height: 220px;
     margin-top: 10px;
+    position: relative;
+    filter: drop-shadow(0 12px 32px rgba(0,0,0,0.45));
+}
+
+.timer-circle.running::after{
+    content: "";
+    position: absolute;
+    inset: -14px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(167,139,250,0.25), transparent 70%);
+    animation: pulse 2.5s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.1;
+    }
 }
 
 .progress-ring{
@@ -688,12 +712,12 @@ body::after{
 
 .ring-progress{
     fill: none;
-    stroke: #a78bfa;
-    stroke-width: 10;
+    stroke: url(#timerGradient);
+    stroke-width: 12;
     stroke-linecap: round;
     stroke-dasharray: 628;
     stroke-dashoffset: 0;
-    filter: drop-shadow(0 0 8px rgba(167,139,250,0.6));
+    filter: drop-shadow(0 0 12px rgba(167,139,250,0.7));
 }
 
 .timer-time{
@@ -702,42 +726,47 @@ body::after{
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
-    font-weight: 600;
-    letter-spacing: 1px;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.45) 0 0 20px rgba(167,139,250,0.7);
 }
 
 .timer-btn{
-    width: 100px;
-    padding: 10px 0;
-    border-radius: 20px;
+    width: 110px;
+    padding: 11px 0;
+    border-radius: 24px;
     border: none;
     font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
     cursor: pointer;
     color: white;
-    transition: 0.2s ease;
+    transition: transform 0.15s ease, background 0.15s ease;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3) 0 8px 20px rgba(0,0,0,0.35);
 }
 
 .timer-btn.primary{
-    background: #a78bfa;
+    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
 }
 
 .timer-btn.primary:hover{
-    background: #8b5cf6;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 0 12px rgba(139,92,246,0.45);
 }
 
 .timer-btn.secondary{
-    background: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.18);
 }
 
 .timer-btn.secondary:hover{
-    background: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.28);
 }
 
 .timer-controls{
     display: flex;
     gap: 14px;
     margin-bottom: 12px;
+    margin-top: 6px;
 }
 
 .hidden{

@@ -17,3 +17,4 @@ macos inspired look for a website since i was bored
 - dock styling changes
 - timer window created
 - picker wheel for timer input completed
+- circle reducing according to timer time
