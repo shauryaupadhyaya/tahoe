@@ -441,7 +441,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  //timer
+  //========================== timer ==========================
   let totalSeconds = 0;
   let remainingSeconds = 0;
   let timerInterval = null;
@@ -451,6 +451,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const timeInput = document.querySelector("#timeInput");
   const startPauseBtn = document.querySelector("#startPauseBtn");
   const cancelBtn = document.querySelector("#cancelBtn");
+
+  const timerCircle = document.querySelector(".timer-circle");
+  const progressRing = document.querySelector(".ring-progress");
+  const radius = 100;
+  const circumference = 2 * Math.PI * radius;
+
+  if(progressRing){
+    progressRing.style.strokeDasharray = circumference;
+    progressRing.style.strokeDashoffset = 0;
+  }
 
   // convert to seconds
   function parseTime(value){
@@ -467,9 +477,22 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${h}:${m}:${s}`
   }
 
+  // update ring
+  function updateRing(){
+    if(!isRunning ||totalSeconds===0){
+      progressRing.style.strokeDashoffset = 0;
+      return;
+    }
+
+    const progress = remainingSeconds/totalSeconds;
+    progressRing.style.strokeDashoffset = 
+      circumference * (1-progress);
+  }
+
   // update text
   function updateDisplay(){
     timeDisplay.textContent = formatTime(remainingSeconds);
+    updateRing();
   }
 
   updateDisplay();
@@ -477,27 +500,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // start/pause button
   startPauseBtn.addEventListener("click", () => {
     if(!isRunning){
-      if(remainingSeconds === 0){
-        totalSeconds = parseTime(timeInput.value);
-        remainingSeconds = totalSeconds
-        updateDisplay();
-      }
-      
+      totalSeconds = parseTime(timeInput.value);
+      remainingSeconds = totalSeconds;
       if(remainingSeconds <= 0) return;
       
       isRunning = true;
       startPauseBtn.textContent = "Pause";
       cancelBtn.classList.remove("hidden");
       setWheelLock(true);
+      timerCircle.classList.add("running");
 
       timerInterval = setInterval(() => {
         remainingSeconds--;
         updateDisplay();
+        
         if(remainingSeconds<=0){
           clearInterval(timerInterval);
           isRunning = false;
           startPauseBtn.textContent = "Start";
           cancelBtn.classList.add("hidden");
+          setWheelLock(false);
+          timerCircle.classList.remove("running");
+          progressRing.style.strokeDashoffset = 0;
         }
       }, 1000);
     } else{
@@ -505,6 +529,7 @@ document.addEventListener("DOMContentLoaded", () => {
       isRunning = false;
       startPauseBtn.textContent = "Start";
       setWheelLock(false);
+      timerCircle.classList.remove("running")
     }
   });
 
@@ -517,9 +542,13 @@ document.addEventListener("DOMContentLoaded", () => {
     startPauseBtn.textContent = "Start";
     cancelBtn.classList.add("hidden");
     setWheelLock(false);
+    timerCircle.classList.remove("running")
   })
 
   // picker wheel (hour minute and second)
+  let pickedHours = 0;
+  let pickedMinutes = 0;
+  let pickedSeconds = 0;
   const wheel = document.querySelector(".wheel");
 
   function setWheelLock(locked){
@@ -530,23 +559,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setupWheel(wheel, onChange){
-    const items = Array.from(wheel.querySelectorAll(".wheel-item:not(.wheel-spacer)"));
+    const items = [...wheel.querySelectorAll(".wheel-item:not(.wheel-spacer)")];
     let ticking = false;
 
     function update(){
-      const wheelRect = wheel.getBoundingClientRect();
-      const wheelCenter = wheelRect.top + wheelRect.height / 2;
+      if(isRunning) return;
+
+      const center = wheel.getBoundingClientRect().top + wheel.offsetHeight / 2;
 
       let closest = null;
-      let closestDist = Infinity;
+      let dist = Infinity;
 
       items.forEach(child => {
-        const rect = child.getBoundingClientRect();
-        const itemCenter = rect.top + rect.height / 2;
-        const dist = Math.abs(wheelCenter - itemCenter);
+        const r = child.getBoundingClientRect();
+        const d = Math.abs((r.top + r.height / 2) - center);
 
-        if(dist < closestDist){
-          closestDist = dist;
+        if(d < dist){
+          dist = d;
           closest = child;
         }
       });
@@ -562,14 +591,15 @@ document.addEventListener("DOMContentLoaded", () => {
       if(wheel.classList.contains("minute-wheel")) pickedMinutes = value;
       if(wheel.classList.contains("second-wheel")) pickedSeconds = value;
 
+      remainingSeconds = 
+        pickedHours * 3600 + pickedMinutes * 60 + pickedSeconds;
+
       timeInput.value = 
         `${String(pickedHours).padStart(2, "0")}:` +
         `${String(pickedMinutes).padStart(2, "0")}:` +
         `${String(pickedSeconds).padStart(2, "0")}`;
 
-      remainingSeconds = pickedHours * 3600 + pickedMinutes * 60 + pickedSeconds;
       updateDisplay();
-
       ticking = false;
     }
 
@@ -583,15 +613,11 @@ document.addEventListener("DOMContentLoaded", () => {
     update();
   }
 
-  let pickedHours = 0;
-  let pickedMinutes = 0;
-  let pickedSeconds = 0;
-
   const hourWheel = document.querySelector(".hour-wheel");
   const minuteWheel = document.querySelector(".minute-wheel");
   const secondWheel = document.querySelector(".second-wheel");
 
-  setupWheel(hourWheel);
-  setupWheel(minuteWheel);
-  setupWheel(secondWheel);
+  if(hourWheel) setupWheel(hourWheel);
+  if (minuteWheel) setupWheel(minuteWheel);
+  if (secondWheel) setupWheel(secondWheel);
 });

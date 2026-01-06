@@ -717,6 +717,7 @@ body::after{
     stroke-linecap: round;
     stroke-dasharray: 628;
     stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.3s linear;
     filter: drop-shadow(0 0 12px rgba(167,139,250,0.7));
 }
 
@@ -808,6 +809,7 @@ body::after{
     scroll-snap-type: y mandatory;
     text-align: center;
     scrollbar-width: none;
+    scroll-behavior: smooth;
 }
 
 .wheel::-webkit-scrollbar{
