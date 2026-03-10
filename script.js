@@ -185,6 +185,40 @@ document.addEventListener("DOMContentLoaded", () => {
         ".weather-icon"
       ).src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
 
+      // dynamic background video
+      const videoMap = {
+        "01d": "videos/sunny-day.mp4",
+        "01n": "videos/clear-night.mp4",
+        "02d": "videos/partly-cloudy.mp4",
+        "02n": "videos/partly-cloudy.mp4",
+        "03d": "videos/cloudy.mp4",
+        "03n": "videos/cloudy.mp4",
+        "04d": "videos/overcast.mp4",
+        "04n": "videos/overcast.mp4",
+        "09d": "videos/drizzle.mp4",
+        "09n": "videos/drizzle.mp4",
+        "10d": "videos/rain.mp4",
+        "10n": "videos/rain.mp4",
+        "11d": "videos/thunderstorm.mp4",
+        "11n": "videos/thunderstorm.mp4",
+        "13d": "videos/snow.mp4",
+        "13n": "videos/snow.mp4",
+        "50d": "videos/fog.mp4",
+        "50n": "videos/fog.mp4",
+      }
+
+      const iconCode = data.weather[0].icon;
+      const videoUrl = videoMap[iconCode] ?? videoMap["01d"];
+
+      const bgVideo = document.getElementById("weather-bg-video");
+      const videoSource = bgVideo.querySelector("source");
+
+      if (videoSource.src !== videoUrl) {
+        videoSource.src = videoUrl;
+        bgVideo.load();
+        bgVideo.play().catch(e => console.log("Video play failed:", e));
+      }
+
       // hourly
       const hourlyRes = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weathercode&timezone=auto`
@@ -292,7 +326,6 @@ document.addEventListener("DOMContentLoaded", () => {
         aqiValueEl.innerText = "---";
       }
     } catch (err) {
-        const weatherContainer = document.querySelector(".weather-container");
         weatherContainer.classList.remove("loading");
         
         document.querySelector(".weather-location").innerText = "Error";
@@ -336,7 +369,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       await loadWeatherByCoords(lat, lon);
     } catch(err){
-      const weatherContainer = document.querySelector(".weather-container");
       weatherContainer.classList.remove("loading");
 
       document.querySelector(".weather-location").innerText = "Error";
@@ -434,7 +466,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 300);
   });
 
-  document.addEventListener("click", (e) => {
+  document.addEventListener("mousedown", (e) => {
     if (!cityDropdown.contains(e.target) && e.target !== cityInput) {
       cityDropdown.innerHTML = "";
       cityDropdown.style.display = "none";

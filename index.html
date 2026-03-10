@@ -65,12 +65,21 @@
     </div>
 
     <div class="window" id="weather-window">
+        
+        <div class="weather-video-wrap">
+            <video autoplay muted loop playsinline id="weather-bg-video">
+                <source src="" type="video/mp4">
+            </video>
+        </div>
+        
         <div class="window-header">
             <button class="close-btn" data-close="weather-window"></button>
             Weather
         </div>
+        
         <div class="window-content">
             <div class="weather-container">
+
                 <div class="weather-header">
                     <div class="weather-search">
                         <input type="text" id="cityInput" placeholder="Enter City">
