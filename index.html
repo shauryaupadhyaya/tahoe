@@ -19,7 +19,26 @@
             <button class="close-btn" data-close="time-window"></button>
             Time
         </div>
-        <div class="window-content"></div>
+        <div class="window-content" id="worldclock">
+            <h1>World Time Zones</h1>
+            <div class="clocks">
+                <div class="clock-section">
+                    <h2>New York</h2>
+                    <canvas id="analog-ny" width="180px" height="180px"></canvas>
+                    <div class="digital-clock" id="digital-ny"></div>
+                </div>
+                <div class="clock-section">
+                    <h2>London</h2>
+                    <canvas id="analog-london" width="180px" height="180px"></canvas>
+                    <div class="digital-clock" id="digital-london"></div>
+                </div>
+                <div class="clock-section">
+                    <h2>Tokyo</h2>
+                    <canvas id="analog-tokyo" width="180px" height="180px"></canvas>
+                    <div class="digital-clock" id="digital-tokyo"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="window" id="music-window">
@@ -27,7 +46,21 @@
             <button class="close-btn" data-close="music-window"></button>
             Now Playing
         </div>
-        <div class="window-content"></div>
+        <div class="window-content" id="spotify-container">
+            <div id="spotify-login-section">
+                <p style="margin-bottom: 15px; opacity: 0.8;">Connect your Spotify Account</p>
+                <button id="spotify-login-btn" class="btn">Login with Spotify</button>
+            </div>
+            <div id="spotify-display" class="hidden">
+                <div class="music-card">
+                    <img id="track-art" src="" alt="Album Art">
+                    <div class="track-info">
+                        <h2 id="track-title">Loading...</h2>
+                        <p id="track-artist"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="window" id="settings-window">
@@ -372,5 +405,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="config.js"></script>
 </body>
 </html>

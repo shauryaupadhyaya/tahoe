@@ -652,4 +652,89 @@ document.addEventListener("DOMContentLoaded", () => {
   if(hourWheel) setupWheel(hourWheel);
   if (minuteWheel) setupWheel(minuteWheel);
   if (secondWheel) setupWheel(secondWheel);
+
+  // world clock
+  function initWorldClock (canvasId, digitalId, timezone){
+    const canvas = document.getElementById(canvasId);
+    const digitalEl = document.getElementById(digitalId);
+    if (!canvas || !digitalEl) return;
+
+    const ctx = canvas.getContext("2d");
+    const radius = canvas.height / 2;
+    const drawRadius = radius * 0.9;
+
+    function draw(){
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.translate(radius, radius);
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString("en-US", {
+        timeZone: timezone,
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+
+      const [h, m, s] = timeStr.split(":").map(Number);
+
+      digitalEl.innerText = timeStr;
+
+      for (let i = 0; i < 12; i++){
+        const angle = i * Math.PI / 6;
+        ctx.rotate(angle);
+        ctx.translate(0, -drawRadius);
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.lineTo(0,6);
+        ctx.strokeStyle = "rgba(255,255,255,0.5)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.translate(0, drawRadius);
+        ctx.rotate(-angle);
+        
+      }
+
+      ctx.beginPath();
+      ctx.arc(0,0,drawRadius,0,2*Math.PI);
+      ctx.strokeStyle = "rgba(255,255,255,255,0.2)";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      function drawHand(angle,length,width,color){
+        ctx.save();
+        ctx.beginPath();
+        ctx.lineWidth = width;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = color;
+        ctx.moveTo(0,0);
+        ctx.rotate(angle);
+        ctx.lineTo(0, -length);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      const hourAngle = (h % 12 * Math.PI / 6) + (m * Math.PI / 360);
+      drawHand(hourAngle, drawRadius * 0.5, 5, "white");
+
+      const minuteAngle = (m * Math.PI / 30) + (s * Math.PI / 1800);
+      drawHand(minuteAngle, drawRadius * 0.5, 5, "rgba(255,255,255,0.8)");
+
+      const secondAngle = (s * Math.PI / 30)
+      drawHand(secondAngle, drawRadius * 0.5, 5, "#ff5f57");
+
+      ctx.beginPath();
+      ctx.arc(0,0,4,0,2 * Math.PI);
+      ctx.fillStyle = "white";
+      ctx.fill();
+    }
+
+    setInterval(draw, 1000);
+    draw();
+  }
+
+  initWorldClock("analog-ny", "digital-ny", "America/New_York");
+  initWorldClock("analog-london", "digital-london", "Europe/London");
+  initWorldClock("analog-tokyo", "digital-tokyo", "Asia/Tokyo");
 });

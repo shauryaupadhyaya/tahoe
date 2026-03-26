@@ -172,21 +172,21 @@ body::after{
     transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
 }
 
-.dock-icon:hover {
-    transform: translateY(-16px) scale(1.25);
-}
-
 .dock-icon:hover::before{
     background: linear-gradient(135deg, rgba(255,255,255,0.35), rgba(255,255,255,0.15));
     box-shadow: 0 8px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4);
 }
 
+.dock-icon:hover {
+    transform: translateY(-10px) scale(1.25);
+}
+
 .dock-icon:hover svg{
-    transform: scale(1.05);
+    transform: scale(0.95);
 }
 
 .dock-icon.bouncing{
-    animation: bounce 0.3s cubic-bezier(.34,1.56,.64,1);
+    animation: bounce 0.5s cubic-bezier(.34,1.56,.64,1);
 }
 
 @keyframes bounce {
@@ -201,15 +201,15 @@ body::after{
 }
 
 .dock:hover .dock-icon{
-    transform: scale(1.0);
+    transform: scale(1.0) translateY(-10px);
 }
 
 .dock-icon:hover ~ .dock-icon{
-    transform: scale(1.1) translateY(-4px);
+    transform: scale(1.05);
 }
 
 .dock-icon:has(~ .dock-icon:hover){
-    transform: scale(1.1) translateY(-4px);
+    transform: scale(1.05);
 }
 
 /* settings styles */
@@ -881,4 +881,62 @@ body::after{
 .wheel-item, .wheel-spacer{
     height: 40px;
     line-height: 40px;
+}
+
+/* world clock styles */
+#time-window{
+    width: 720px;
+    height: 435px;
+}
+
+.clocks{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.clock-section{
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 16px rgba(44,83,100,0.2);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 20px 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.25s ease;
+}
+
+.clock-section:hover{
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.12);
+}
+
+.clock-section h2{
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+canvas{
+    background: transparent;
+    margin-bottom: 15px;
+    border-radius: 50%;
+}
+
+.digital-clock{
+    font-size: 20px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 4px;
+    color: #fff;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
 }

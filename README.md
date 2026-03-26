@@ -1,6 +1,13 @@
 # tahoe
 macos inspired look for a website since i was bored
 
+## features
+- weather app
+- world clock with 3 cities
+- timer app
+- background changing
+- light and dark modes
+
 ## upadates
 - simple background changing feature
 - dock and topbar added with time and date
@@ -19,3 +26,4 @@ macos inspired look for a website since i was bored
 - picker wheel for timer input completed
 - circle reducing according to timer time
 - dynamic video background for weather app
+- world clock section added
