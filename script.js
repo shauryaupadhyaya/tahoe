@@ -790,8 +790,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const spotifyNothing = document.getElementById("spotify-nothing");
 
   function showSpotifyLogin(){
-    spotifyLoginSection.classList.add("hidden");
-    spotifyDisplay.classList.remove("hidden");
+    spotifyLoginSection.classList.remove("hidden");
+    spotifyDisplay.classList.add("hidden");
     if (spotifyNothing) spotifyNothing.classList.add("hidden");
   }
 
@@ -883,7 +883,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function updateSpotify(){
     try{
-      const res = await fetch ("https://accounts.spotify.com/api/token", {
+      const token = await spFreshToken();
+      if (!token) {showSpotifyLogin(); return;}
+      
+      const res = await fetch ("https://api.spotify.com/v1/me/player/currently-playing", {
         headers: {Authorization: "Bearer " + token}
       });
 
@@ -929,7 +932,7 @@ document.addEventListener("DOMContentLoaded", () => {
   (async () => {
     const wasCallback = await spHandleCallback();
     if (wasCallback || spGet("sp_at") || spGet("sp_rt")){
-      updateSpotify();
+      await updateSpotify();
       setInterval(updateSpotify, 8000);
     } else {
       showSpotifyLogin();
