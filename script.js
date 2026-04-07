@@ -737,4 +737,202 @@ document.addEventListener("DOMContentLoaded", () => {
   initWorldClock("analog-ny", "digital-ny", "America/New_York");
   initWorldClock("analog-london", "digital-london", "Europe/London");
   initWorldClock("analog-tokyo", "digital-tokyo", "Asia/Tokyo");
+
+  // music section
+  const SP_REDIRECT = window.location.origin + window.location.pathname;
+  const hintEl = document.getElementById("spotify-redirect-hint");
+  if (hintEl) hintEl.textContent = SP_REDIRECT;
+
+  function spRandStr(len){
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const buf = new Uint8Array(len);
+    crypto.getRandomValues(buf);
+    return Array.from(buf, b => chars[b % chars.length]).join("");
+  }
+
+  async function spChallenge(verifier){
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
+    return btoa(String.fromCharCode(...new Uint8Array(buf)))
+      .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  function spGet(k) {return localStorage.getItem(k);}
+  function spSet(k, v) {localStorage.setItem(k, v);}
+  function spDel(k) {localStorage.removeItem(k);}
+
+  function spSaveTokens(d){
+    spSet("sp_at", d.access_token);
+    if (d.refresh_token) spSet("sp_rt", d.refresh_token);
+    spSet("sp_exp", Date.now() + (d.expires_in - 60) * 1000);
+  }
+
+  function spClear(){
+    ["sp_at", "sp_rt", "sp_exp", "sp_ver", "sp_st"].forEach(spDel);
+  }
+
+  async function spFreshToken() {
+    if(spGet("sp_at") && Date.now() < parseInt(spGet("sp_exp") || "0")) return spGet("sp_at");
+    const rt = spGet("sp_rt");
+    if (!rt) {spClear(); showSpotifyLogin(); return null;}
+    const r = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+      body: new URLSearchParams({grant_type: "refresh_token", refresh_token: rt, client_id: SPOTIFY_CONFIG.clientId})
+    });
+    if (!r.ok) {spClear(); showSpotifyLogin(); return null;}
+    const d = await r.json();
+    spSaveTokens(d);
+    return d.access_token;
+  }
+
+  const spotifyLoginSection = document.getElementById("spotify-login-section");
+  const spotifyDisplay = document.getElementById("spotify-display");
+  const spotifyNothing = document.getElementById("spotify-nothing");
+
+  function showSpotifyLogin(){
+    spotifyLoginSection.classList.add("hidden");
+    spotifyDisplay.classList.remove("hidden");
+    if (spotifyNothing) spotifyNothing.classList.add("hidden");
+  }
+
+  function showSpotifyNothing(){
+    spotifyLoginSection.classList.add("hidden");
+    spotifyDisplay.classList.add("hidden");
+    if (spotifyNothing) spotifyNothing.classList.remove("hidden");
+  }
+
+  function showSpotifyTrack(){
+    spotifyLoginSection.classList.add("hidden");
+    spotifyDisplay.classList.remove("hidden");
+    if (spotifyNothing) spotifyNothing.classList.add("hidden");
+  }
+
+  function spFmtTime(ms){
+    const s = Math.floor(ms/1000);
+    return `${Math.floor(s/60)}:${String(s % 60).padStart(2, "0")}`;
+  }
+
+  let spProgressMs = 0, spDurationMs = 0, spIsPlaying = false, spTick = null;
+
+  function spStartTick(){
+    clearInterval(spTick);
+    spTick = setInterval(() => {
+      if(!spIsPlaying) return;
+      spProgressMs = Math.min(spProgressMs + 1000, spDurationMs);
+      spRenderProgress();
+    }, 1000);
+  }
+
+  function spRenderProgress(){
+    const pct = spDurationMs > 0 ? (spProgressMs/spDurationMs) * 100 : 0;
+    const fill = document.getElementById("spotify-progress-fill");
+    const cur = document.getElementById("spotify-time-current");
+    const tot = document.getElementById("spotify-time-total");
+    if (fill) fill.style.width = pct + "%";
+    if (cur) cur.textContent = spFmtTime(spProgressMs);
+    if (tot) tot.textContent = spFmtTime(spDurationMs);
+  }
+
+  const spotifyLoginBtn = document.getElementById("spotify-login-btn");
+  if(spotifyLoginBtn){
+    spotifyLoginBtn.onclick = async () => {
+      const verifier = spRandStr(96);
+      const challenge = await spChallenge(verifier);
+      const state = spRandStr(16);
+      spSet("sp_ver", verifier);
+      spSet("sp_st", state);
+      const params = new URLSearchParams({
+        client_id: SPOTIFY_CONFIG.clientId,
+        response_type: "code",
+        redirect_uri: SP_REDIRECT,
+        scope: "user-read-currently-playing user-read-playback-state", state,
+        code_challenge_method: "S256",
+        code_challenge: challenge,
+      });
+      window.location.href = "https://accounts.spotify.com/authorize?" + params;
+    };
+  }
+
+  async function spHandleCallback(){
+    const p = new URLSearchParams(window.location.search);
+    const code = p.get("code");
+    const state = p.get("state");
+    const err = p.get("error");
+    if (err){console.warn("Spotify auth error:", err); showSpotifyLogin(); return false;}
+    if (!code) return false;
+    if (state !== spGet("sp_st")) {console.warn("State mismatch"); showSpotifyLogin(); return false;}
+
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    const r = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "authorization_code", code,
+        redirect_uri: SP_REDIRECT,
+        client_id: SPOTIFY_CONFIG.clientId,
+        code_verifier: spGet("sp_ver"),
+      })
+    });
+    spDel("sp_ver"); spDel("sp_st");
+
+    if (!r.ok){console.error("Token exchange failed", await r.text()); showSpotifyLogin(); return false;}
+    spSaveTokens(await r.json());
+    return true;
+  }
+
+  async function updateSpotify(){
+    try{
+      const res = await fetch ("https://accounts.spotify.com/api/token", {
+        headers: {Authorization: "Bearer " + token}
+      });
+
+      if (res.status === 204 || res.status === 202){
+        showSpotifyNothing();
+        return;
+      }
+
+      if (res.status === 401){
+        spClear();
+        showSpotifyLogin();
+        return;
+      }
+
+      if (!res.ok) return;
+
+      const data = await res.json();
+      if (!data || !data.item) {
+        showSpotifyNothing();
+        return;
+      }
+
+      spProgressMs = data.progress_ms || 0;
+      spDurationMs = data.item.duration_ms || 0;
+      spIsPlaying = data.is_playing;
+
+      spStartTick();
+      spRenderProgress();
+
+      document.getElementById("track-art").src = data.item.album.images[0]?.url || "";
+      document.getElementById("track-title").innerText = data.item.name;
+      document.getElementById("track-artist").innerText = data.item.artists.map(a => a.name).join(", ") || "Unknown Artist";
+
+      const albumEl = document.getElementById("track-album-name");
+      if (albumEl) albumEl.innerText = data.item.name || "";
+
+      showSpotifyTrack();
+    } catch (err){
+      console.error("spotify api error: ", err);
+    } 
+  }
+
+  (async () => {
+    const wasCallback = await spHandleCallback();
+    if (wasCallback || spGet("sp_at") || spGet("sp_rt")){
+      updateSpotify();
+      setInterval(updateSpotify, 8000);
+    } else {
+      showSpotifyLogin();
+    }
+  })();
 });

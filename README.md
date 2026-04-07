@@ -27,3 +27,4 @@ macos inspired look for a website since i was bored
 - circle reducing according to timer time
 - dynamic video background for weather app
 - world clock section added
+- spotify currently playing section added
