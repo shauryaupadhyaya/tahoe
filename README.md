@@ -2,11 +2,12 @@
 macos inspired look for a website since i was bored
 
 ## features
-- weather app
+- weather app for most cities
 - world clock with 3 cities
-- timer app
-- background changing
-- light and dark modes
+- timer app to improve productivity
+- background changing feature
+- light and dark mode
+- now playing music viewer
 
 ## upadates
 - simple background changing feature

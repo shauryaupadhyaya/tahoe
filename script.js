@@ -739,203 +739,112 @@ document.addEventListener("DOMContentLoaded", () => {
   initWorldClock("analog-tokyo", "digital-tokyo", "Asia/Tokyo");
 
   // music section
-  const SP_REDIRECT = window.location.origin + window.location.pathname;
-  const hintEl = document.getElementById("spotify-redirect-hint");
-  if (hintEl) hintEl.textContent = SP_REDIRECT;
+  const LASTFM_KEY = "79363399842decbbfc827136a5f7ea4c";
+  let lfmUser = localStorage.getItem("lfm_user") || null;
+  let lfmPoll = null;
 
-  function spRandStr(len){
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const buf = new Uint8Array(len);
-    crypto.getRandomValues(buf);
-    return Array.from(buf, b => chars[b % chars.length]).join("");
+  const lfmLogin = document.getElementById("lfm-login");
+  const lfmDisplay = document.getElementById("lfm-display");
+  const lfmNothing = document.getElementById("lfm-nothing");
+  const lfmInput = document.getElementById("lfm-input");
+  const lfmConnectBtn = document.getElementById("lfm-connect-btn");
+  const lfmDisconnectBtn = document.getElementById("lfm-disconnect-btn");
+  const lfmDisconnectBtn2 = document.getElementById("lfm-disconnect-btn2");
+
+  function lfmShowLogin() {
+    lfmLogin.classList.remove("hidden");
+    lfmDisplay.classList.add("hidden");
+    lfmNothing.classList.add("hidden");
   }
 
-  async function spChallenge(verifier){
-    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
-    return btoa(String.fromCharCode(...new Uint8Array(buf)))
-      .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  function lfmShowTrack() {
+    lfmLogin.classList.add("hidden");
+    lfmDisplay.classList.remove("hidden");
+    lfmNothing.classList.add("hidden");
   }
 
-  function spGet(k) {return localStorage.getItem(k);}
-  function spSet(k, v) {localStorage.setItem(k, v);}
-  function spDel(k) {localStorage.removeItem(k);}
-
-  function spSaveTokens(d){
-    spSet("sp_at", d.access_token);
-    if (d.refresh_token) spSet("sp_rt", d.refresh_token);
-    spSet("sp_exp", Date.now() + (d.expires_in - 60) * 1000);
+  function lfmShowNothing() {
+    lfmLogin.classList.add("hidden");
+    lfmDisplay.classList.add("hidden");
+    lfmNothing.classList.remove("hidden");
   }
 
-  function spClear(){
-    ["sp_at", "sp_rt", "sp_exp", "sp_ver", "sp_st"].forEach(spDel);
-  }
-
-  async function spFreshToken() {
-    if(spGet("sp_at") && Date.now() < parseInt(spGet("sp_exp") || "0")) return spGet("sp_at");
-    const rt = spGet("sp_rt");
-    if (!rt) {spClear(); showSpotifyLogin(); return null;}
-    const r = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {"Content-Type": "application/x-www-form-urlencoded"},
-      body: new URLSearchParams({grant_type: "refresh_token", refresh_token: rt, client_id: SPOTIFY_CONFIG.clientId})
-    });
-    if (!r.ok) {spClear(); showSpotifyLogin(); return null;}
-    const d = await r.json();
-    spSaveTokens(d);
-    return d.access_token;
-  }
-
-  const spotifyLoginSection = document.getElementById("spotify-login-section");
-  const spotifyDisplay = document.getElementById("spotify-display");
-  const spotifyNothing = document.getElementById("spotify-nothing");
-
-  function showSpotifyLogin(){
-    spotifyLoginSection.classList.remove("hidden");
-    spotifyDisplay.classList.add("hidden");
-    if (spotifyNothing) spotifyNothing.classList.add("hidden");
-  }
-
-  function showSpotifyNothing(){
-    spotifyLoginSection.classList.add("hidden");
-    spotifyDisplay.classList.add("hidden");
-    if (spotifyNothing) spotifyNothing.classList.remove("hidden");
-  }
-
-  function showSpotifyTrack(){
-    spotifyLoginSection.classList.add("hidden");
-    spotifyDisplay.classList.remove("hidden");
-    if (spotifyNothing) spotifyNothing.classList.add("hidden");
-  }
-
-  function spFmtTime(ms){
-    const s = Math.floor(ms/1000);
-    return `${Math.floor(s/60)}:${String(s % 60).padStart(2, "0")}`;
-  }
-
-  let spProgressMs = 0, spDurationMs = 0, spIsPlaying = false, spTick = null;
-
-  function spStartTick(){
-    clearInterval(spTick);
-    spTick = setInterval(() => {
-      if(!spIsPlaying) return;
-      spProgressMs = Math.min(spProgressMs + 1000, spDurationMs);
-      spRenderProgress();
-    }, 1000);
-  }
-
-  function spRenderProgress(){
-    const pct = spDurationMs > 0 ? (spProgressMs/spDurationMs) * 100 : 0;
-    const fill = document.getElementById("spotify-progress-fill");
-    const cur = document.getElementById("spotify-time-current");
-    const tot = document.getElementById("spotify-time-total");
-    if (fill) fill.style.width = pct + "%";
-    if (cur) cur.textContent = spFmtTime(spProgressMs);
-    if (tot) tot.textContent = spFmtTime(spDurationMs);
-  }
-
-  const spotifyLoginBtn = document.getElementById("spotify-login-btn");
-  if(spotifyLoginBtn){
-    spotifyLoginBtn.onclick = async () => {
-      const verifier = spRandStr(96);
-      const challenge = await spChallenge(verifier);
-      const state = spRandStr(16);
-      spSet("sp_ver", verifier);
-      spSet("sp_st", state);
-      const params = new URLSearchParams({
-        client_id: SPOTIFY_CONFIG.clientId,
-        response_type: "code",
-        redirect_uri: SP_REDIRECT,
-        scope: "user-read-currently-playing user-read-playback-state", state,
-        code_challenge_method: "S256",
-        code_challenge: challenge,
-      });
-      window.location.href = "https://accounts.spotify.com/authorize?" + params;
-    };
-  }
-
-  async function spHandleCallback(){
-    const p = new URLSearchParams(window.location.search);
-    const code = p.get("code");
-    const state = p.get("state");
-    const err = p.get("error");
-    if (err){console.warn("Spotify auth error:", err); showSpotifyLogin(); return false;}
-    if (!code) return false;
-    if (state !== spGet("sp_st")) {console.warn("State mismatch"); showSpotifyLogin(); return false;}
-
-    window.history.replaceState({}, document.title, window.location.pathname);
-
-    const r = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        grant_type: "authorization_code", code,
-        redirect_uri: SP_REDIRECT,
-        client_id: SPOTIFY_CONFIG.clientId,
-        code_verifier: spGet("sp_ver"),
-      })
-    });
-    spDel("sp_ver"); spDel("sp_st");
-
-    if (!r.ok){console.error("Token exchange failed", await r.text()); showSpotifyLogin(); return false;}
-    spSaveTokens(await r.json());
-    return true;
-  }
-
-  async function updateSpotify(){
+  async function lfmFetch(){
+    if (!lfmUser) return;
     try{
-      const token = await spFreshToken();
-      if (!token) {showSpotifyLogin(); return;}
-      
-      const res = await fetch ("https://api.spotify.com/v1/me/player/currently-playing", {
-        headers: {Authorization: "Bearer " + token}
-      });
-
-      if (res.status === 204 || res.status === 202){
-        showSpotifyNothing();
-        return;
-      }
-
-      if (res.status === 401){
-        spClear();
-        showSpotifyLogin();
-        return;
-      }
-
-      if (!res.ok) return;
-
+      const res = await fetch(`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${encodeURIComponent(lfmUser)}&api_key=${LASTFM_KEY}&format=json&limit=1`);
       const data = await res.json();
-      if (!data || !data.item) {
-        showSpotifyNothing();
+
+      if (data.error){
+        lfmShowNothing();
         return;
       }
 
-      spProgressMs = data.progress_ms || 0;
-      spDurationMs = data.item.duration_ms || 0;
-      spIsPlaying = data.is_playing;
+      const tracks = data.recenttracks?.track;
+      if (!tracks || !tracks.length){
+        lfmShowNothing();
+        return;
+      }
 
-      spStartTick();
-      spRenderProgress();
+      const track = Array.isArray(tracks) ? tracks[0] : tracks;
+      const nowPlaying = track["@attr"]?.nowplaying === "true";
+      if (!nowPlaying){lfmShowNothing(); return;}
 
-      document.getElementById("track-art").src = data.item.album.images[0]?.url || "";
-      document.getElementById("track-title").innerText = data.item.name;
-      document.getElementById("track-artist").innerText = data.item.artists.map(a => a.name).join(", ") || "Unknown Artist";
+      document.getElementById("track-title").textContent = track.name || "Unknown Track";
+      document.getElementById("track-artist").textContent = track.artist?.["#text"] || "Unknown Artist";
+      document.getElementById("track-album-name").textContent = track.album?.["#text"] || "Unknown Album";
 
-      const albumEl = document.getElementById("track-album-name");
-      if (albumEl) albumEl.innerText = data.item.name || "";
+      const imgs = track.image || [];
+      const artUrl =
+        (imgs.find(i => i.size === "extralarge") || 
+          imgs.find(i => i.size === "large") || 
+          imgs[imgs.length - 1] || 
+          {})["#text"] || "";
+      const artEl = document.getElementById("track-art");
 
-      showSpotifyTrack();
-    } catch (err){
-      console.error("spotify api error: ", err);
-    } 
+      if (artUrl && !artUrl.includes("2a96cbd8b46e442fc41c2b86b821562f")) {
+        artEl.src = artUrl;
+        artEl.style.display = "block";
+      } else{
+        artEl.style.display = "none";
+      }
+
+      lfmShowTrack();
+    } catch (e){
+      console.error("Last.fm fetch error:", e);
+    }
   }
 
-  (async () => {
-    const wasCallback = await spHandleCallback();
-    if (wasCallback || spGet("sp_at") || spGet("sp_rt")){
-      await updateSpotify();
-      setInterval(updateSpotify, 8000);
-    } else {
-      showSpotifyLogin();
+  function lfmStart(){
+    lfmFetch();
+    clearInterval(lfmPoll);
+    lfmPoll = setInterval(lfmFetch, 10000);
+  }
+
+  function lfmDisconnect(){
+    clearInterval(lfmPoll);
+    lfmUser = null;
+    localStorage.removeItem("lfm_user");
+    lfmShowLogin();
+  }
+
+  lfmConnectBtn.addEventListener("click", () => {
+    const val = lfmInput.value.trim();
+    if (!val) return;
+    lfmUser = val;
+    localStorage.setItem("lfm_user", lfmUser);
+    lfmStart();
+  });
+
+  lfmInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      lfmConnectBtn.click();
     }
-  })();
+  });
+
+  lfmDisconnectBtn.addEventListener("click", lfmDisconnect);
+  lfmDisconnectBtn2.addEventListener("click", lfmDisconnect);
+
+  if (lfmUser) lfmStart();
+  else lfmShowLogin();
 });
