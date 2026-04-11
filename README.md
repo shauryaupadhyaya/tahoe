@@ -29,3 +29,4 @@ macos inspired look for a website since i was bored
 - dynamic video background for weather app
 - world clock section added
 - spotify currently playing section added
+- lastfm api used to view current track
